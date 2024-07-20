@@ -1,6 +1,6 @@
 #include "updater.h"
 
-Updater::Updater(ApiDriverType driver)
+Updater::Updater(ApiDriverType driver, QObject* parent) : QObject(parent)
 {
     switch (driver)
     {
@@ -8,7 +8,7 @@ Updater::Updater(ApiDriverType driver)
         _driver = new YandexDiskDriver();
         break;
     case ApiDriverType::GoogleDrive:
-        _driver = new GoogleDriveDriver();
+//        _driver = new GoogleDriveDriver();
         break;
     default:
         throw "Invalid driver";
@@ -84,4 +84,14 @@ void Updater::getAllFiles(QString currentDir)
             _fileList.append(file);
         }
     }
+}
+
+bool Updater::checkUpdate()
+{
+    connect(_driver, &IApiDriver::onDownloaded, [this](){
+        qDebug() << "Update is avilable";
+    });
+//    _driver->tryDownloadFile("https://disk.yandex.ru/d/H9UuULUw5x06oA", "includes.ini");
+
+    _driver->checkUpdate("https://disk.yandex.ru/d/H9UuULUw5x06oA");
 }

@@ -12,10 +12,11 @@
 #include "googledrivedriver.h"
 #include "apidrivertype.h"
 
-class Updater
+class Updater : public QObject
 {
+    Q_OBJECT
 public:
-    Updater(ApiDriverType driver);
+    explicit Updater(ApiDriverType driver, QObject* parent = nullptr);
     ~Updater();
 
     QStringList getFileList();
@@ -25,6 +26,8 @@ public:
     QByteArray getHexHash(QString fileName);
 
     void getAllFiles(QString currentDir);
+
+    bool checkUpdate();
 
 private:
     QString _currentDir;

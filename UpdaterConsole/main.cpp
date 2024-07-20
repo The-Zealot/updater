@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
     {
-        Updater updater;
-        QJsonObject jObject;
+        Updater* updater = new Updater(ApiDriverType::YandexDisk);
+        QJsonObject configJson;
         YandexDiskDownloader* downlaoder = new YandexDiskDownloader();
 
         QFile file("./config.json");
         if (file.open(QIODevice::ReadOnly))
         {
-            jObject = QJsonDocument::fromJson(file.readAll()).object();
+            configJson = QJsonDocument::fromJson(file.readAll()).object();
             file.close();
         }
         else
@@ -35,16 +35,16 @@ int main(int argc, char *argv[])
 
         if (a.arguments().at(1) == "1")
         {
-            updater.getFileList();
-            updater.saveToFile();
+            updater->getFileList();
+            updater->saveToFile();
 
             qDebug() << "includes.ini was updated";
-            qDebug() << updater.getFileList().size() << "strings was changed";
+            qDebug() << updater->getFileList().size() << "strings was changed";
         }
         if (a.arguments().at(1) == "2")
         {
             qDebug() << "List of all entry files:";
-            QStringList list = updater.getFileList();
+            QStringList list = updater->getFileList();
             for (auto iter : list)
             {
                 qDebug() << iter;
@@ -52,10 +52,12 @@ int main(int argc, char *argv[])
         }
         if (a.arguments().at(1) == "0")
         {
-            qDebug() << "Current remote repository:" << jObject["repository"];
+            qDebug() << "Current remote repository:" << configJson["repository"];
             qDebug() << "Connecting...";
 
-            downlaoder->getFileList();
+//            downlaoder->getFileList();
+
+            updater->checkUpdate();
 //            downlaoder->auth();
         }
     }

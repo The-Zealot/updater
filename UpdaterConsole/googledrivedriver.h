@@ -10,8 +10,8 @@ class GoogleDriveDriver : public IApiDriver
 public:
     explicit GoogleDriveDriver(QObject *parent = nullptr);
 
-    void checkUpdate() override;
-    void updateDownload() override;
+
+    void downloadUpdate() override;
 };
 
 #endif // GOOGLEDRIVEDRIVER_H

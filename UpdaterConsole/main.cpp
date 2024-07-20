@@ -21,8 +21,6 @@ int main(int argc, char *argv[])
         QJsonObject jObject;
         YandexDiskDownloader* downlaoder = new YandexDiskDownloader();
 
-//        qDebug() << request;
-
         QFile file("./config.json");
         if (file.open(QIODevice::ReadOnly))
         {

@@ -1,13 +1,25 @@
 #include "updater.h"
 
-Updater::Updater()
+Updater::Updater(ApiDriverType driver)
 {
+    switch (driver)
+    {
+    case ApiDriverType::YandexDisk:
+        _driver = new YandexDiskDriver();
+        break;
+    case ApiDriverType::GoogleDrive:
+        _driver = new GoogleDriveDriver();
+        break;
+    default:
+        throw "Invalid driver";
+    }
+
     _currentDir = QDir::currentPath();
 }
 
 Updater::~Updater()
 {
-
+    delete _driver;
 }
 
 QStringList Updater::getFileList()

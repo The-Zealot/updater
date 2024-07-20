@@ -3,8 +3,8 @@
 
 enum class ApiDriverType
 {
-    YandexDisk  = 0,
-    GoogleDrive = 0,
+    YandexDisk  = 1,
+    GoogleDrive = 2,
 };
 
 #endif // APIDRIVERTYPE_H

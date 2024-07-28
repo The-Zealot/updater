@@ -5,16 +5,19 @@
 #include "updater.h"
 #include "yandexdiskdownloader.h"
 
+#define VERSION_MAJOR   0
+#define VERSION_MINOR   1
+
 #define CLIENT_ID "00fa0ee81e0a4001af38352ec8c92749"
 #define DEBUG_TOKEN "y0_AgAAAAAiydKTAAwPKwAAAAEJivHTAAB26_lvlvxAm7dNpQgp9SqA4l3-2w"
 #define DEBUG_TOKEN_V2 "y0_AgAAAAAiydKTAAwPKwAAAAEJivHTAAB26_lvlvxAm7dNpQgp9SqA4l3-2w"
 
-
 #define ERROR_CODE_NO_CONFIG 1
 
-#define COMMAND_FILE_LIST "/files"
-#define COMMAND_MAKE_INI "/makeini"
-#define COMMAND_UPDATE "/update"
+#define COMMAND_FILE_LIST   "/files"
+#define COMMAND_MAKE_INI    "/makeini"
+#define COMMAND_UPDATE      "/update"
+#define COMMAND_HELP        "/help"
 
 int main(int argc, char *argv[])
 {
@@ -22,9 +25,10 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
     {
+        qDebug() << "Start application";
+
         Updater* updater = new Updater(ApiDriverType::YandexDisk);
         QJsonObject configJson;
-        YandexDiskDownloader* downloader = new YandexDiskDownloader();
 
         QFile file("./config.json");
         if (file.open(QIODevice::ReadOnly))
@@ -60,10 +64,15 @@ int main(int argc, char *argv[])
             qDebug() << "Current remote repository:" << configJson["repository"];
             qDebug() << "Connecting...";
 
-//            downloader->getFileList();
-
+            updater->setRepository(configJson["repository"].toString());
             updater->checkUpdate();
-//            downloader->auth();
+        }
+        if (a.arguments().at(1) == COMMAND_HELP or a.arguments().at(1) == "/?")
+        {
+            qDebug() << "/files     to show all files in this directory";
+            qDebug() << "/makeini   to create an ini file for correctly updates";
+            qDebug() << "/update    for total updating current directory";
+            qDebug() << "/help      to show help information";
         }
     }
 

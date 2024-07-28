@@ -20,13 +20,16 @@ class IApiDriver : public QObject
 public:
     explicit IApiDriver(QObject *parent = nullptr);
 
-    virtual void checkUpdate(const QString &public_key)                                                      = 0;
-    virtual void downloadUpdate()                                                   = 0;
-    virtual void tryDownloadFile(const QString &public_key, const QString &path)    = 0;
+    virtual void checkUpdate(const QString &public_key)                                 = 0;
+    virtual void downloadUpdate(const QString &public_key, QStringList &updateFileList) = 0;
+    virtual void tryDownloadFile(const QString &public_key, const QString &path)        = 0;
+
+    virtual QByteArray getLastData() = 0;
 
 signals:
     void onReplyFinished();
     void onDownloaded();
+    void onFileRead();
 
 protected slots:
     void replyFinished(QNetworkReply* reply);

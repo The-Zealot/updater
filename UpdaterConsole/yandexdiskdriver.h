@@ -23,8 +23,10 @@ public:
     explicit YandexDiskDriver(QObject *parent = nullptr);
 
     void checkUpdate(const QString &public_key) override;
-    void downloadUpdate() override;
+    void downloadUpdate(const QString &public_key, QStringList &updateFileList) override;
     void tryDownloadFile(const QString &public_key, const QString &path) override;
+
+    QByteArray getLastData() override;
 
 private:
     void downloadFile(const QString &url);

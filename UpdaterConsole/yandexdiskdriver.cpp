@@ -16,9 +16,14 @@ void YandexDiskDriver::checkUpdate(const QString &public_key)
     _manager->get(buildRequest("/v1/disk/public/resources/download", params, ApiDriverRequest::CheckUpdate));
 }
 
-void YandexDiskDriver::downloadUpdate()
+void YandexDiskDriver::downloadUpdate(const QString &public_key, QStringList &updateFileList)
 {
+    //////// Multithread ////////
 
+//    for (auto & iter : updateFileList)
+//    {
+//        tryDownloadFile(public_key, iter);
+//    }
 }
 
 void YandexDiskDriver::tryDownloadFile(const QString &public_key, const QString &path)
@@ -32,10 +37,13 @@ void YandexDiskDriver::tryDownloadFile(const QString &public_key, const QString 
     _manager->get(buildRequest("/v1/disk/public/resources/download", params, ApiDriverRequest::GetDownloadUrl));
 }
 
+QByteArray YandexDiskDriver::getLastData()
+{
+    return _responseData;
+}
+
 void YandexDiskDriver::downloadFile(const QString &url)
 {
-    qDebug() << "Download...";
-
     QNetworkRequest request(url);
     _requestType == ApiDriverRequest::GetDownloadUrl ? _requestType = ApiDriverRequest::DownloadFile : _requestType = ApiDriverRequest::ReadFile;
     _manager->get(request);
@@ -58,7 +66,7 @@ void YandexDiskDriver::process()
     switch (_requestType)
     {
     case ApiDriverRequest::GetDownloadUrl: case ApiDriverRequest::CheckUpdate:
-        jObject = QJsonDocument::fromJson(_responseData.data()).object();
+        jObject = QJsonDocument::fromJson(_responseData).object();
 
         if (!jObject["templated"].toBool())
         {
@@ -76,6 +84,7 @@ void YandexDiskDriver::process()
         {
             file.write(_responseData);
             file.close();
+            qDebug() << "Downloaded";
         }
         else
         {
@@ -86,7 +95,8 @@ void YandexDiskDriver::process()
 
         break;
     case ApiDriverRequest::ReadFile:
-        qDebug () << _responseData.data();
+        qDebug() << _responseData.data();
+        emit onFileRead();
         break;
     }
 }

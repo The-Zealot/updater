@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDir>
+#include <QSettings>
 
 #include "yandexdiskdriver.h"
 #include "googledrivedriver.h"
@@ -27,13 +28,20 @@ public:
 
     void getAllFiles(QString currentDir);
 
+    bool setRepository(const QString &repository);
     bool checkUpdate();
+    void fullUpdate(QStringList &fileList);
+
+public slots:
+    QStringList compareIni();
 
 private:
     QString _currentDir;
     QStringList _fileList;
     IApiDriver* _driver;
     ApiDriverType _driverType;
+
+    QString _publicKey;
 };
 
 

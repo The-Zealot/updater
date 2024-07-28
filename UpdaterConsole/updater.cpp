@@ -11,10 +11,16 @@ Updater::Updater(ApiDriverType driver, QObject* parent) : QObject(parent)
 //        _driver = new GoogleDriveDriver();
         break;
     default:
-        throw "Invalid driver";
+        throw std::runtime_error("Invalid driver");
     }
 
+    connect(_driver, &IApiDriver::onFileRead, this, &Updater::compareIni);
+    connect(_driver, &IApiDriver::onDownloaded, [this](){
+        qDebug() << "Update is avilable";
+    });
+
     _currentDir = QDir::currentPath();
+
 }
 
 Updater::~Updater()
@@ -86,12 +92,59 @@ void Updater::getAllFiles(QString currentDir)
     }
 }
 
-bool Updater::checkUpdate()
+QStringList Updater::compareIni()
 {
-    connect(_driver, &IApiDriver::onDownloaded, [this](){
-        qDebug() << "Update is avilable";
-    });
+    QStringList updateFile;
+    QFile file("./includes.ini");
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QString tempReadingData     = file.readAll();
+        QStringList localIniList    = tempReadingData.split("\n");
+        file.close();
+
+        tempReadingData             = _driver->getLastData();
+        tempReadingData             = tempReadingData.remove(tempReadingData.size() - 1, 1);
+        QStringList remoteIniList   = tempReadingData.split("\n");
+
+        for (auto & iter : remoteIniList)
+        {
+            if (!localIniList.contains(iter))
+            {
+                updateFile.append(iter.split("=").at(0));
+            }
+        }
+    }
+    else
+    {
+        qDebug() << "Failed when making update file list";
+    }
+
+    qDebug() << updateFile;
+    return updateFile;
+}
+
+bool Updater::setRepository(const QString &repository)
+{
+    _publicKey = repository;
+}
+
+bool Updater::checkUpdate()
+{   
 //    _driver->tryDownloadFile("https://disk.yandex.ru/d/H9UuULUw5x06oA", "includes.ini");
 
-    _driver->checkUpdate("https://disk.yandex.ru/d/H9UuULUw5x06oA");
+    if (!_publicKey.isEmpty())
+    {
+        _driver->checkUpdate(_publicKey);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Repository url is empty";
+        return false;
+    }
+}
+
+void Updater::fullUpdate(QStringList &fileList)
+{
+    qDebug() << "Fatal error";                                                                                              // TODO
 }

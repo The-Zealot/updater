@@ -9,7 +9,12 @@
 #define DEBUG_TOKEN "y0_AgAAAAAiydKTAAwPKwAAAAEJivHTAAB26_lvlvxAm7dNpQgp9SqA4l3-2w"
 #define DEBUG_TOKEN_V2 "y0_AgAAAAAiydKTAAwPKwAAAAEJivHTAAB26_lvlvxAm7dNpQgp9SqA4l3-2w"
 
+
 #define ERROR_CODE_NO_CONFIG 1
+
+#define COMMAND_FILE_LIST "/files"
+#define COMMAND_MAKE_INI "/makeini"
+#define COMMAND_UPDATE "/update"
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +24,7 @@ int main(int argc, char *argv[])
     {
         Updater* updater = new Updater(ApiDriverType::YandexDisk);
         QJsonObject configJson;
-        YandexDiskDownloader* downlaoder = new YandexDiskDownloader();
+        YandexDiskDownloader* downloader = new YandexDiskDownloader();
 
         QFile file("./config.json");
         if (file.open(QIODevice::ReadOnly))
@@ -33,7 +38,7 @@ int main(int argc, char *argv[])
             return ERROR_CODE_NO_CONFIG;
         }
 
-        if (a.arguments().at(1) == "1")
+        if (a.arguments().at(1) == COMMAND_MAKE_INI)
         {
             updater->getFileList();
             updater->saveToFile();
@@ -41,7 +46,7 @@ int main(int argc, char *argv[])
             qDebug() << "includes.ini was updated";
             qDebug() << updater->getFileList().size() << "strings was changed";
         }
-        if (a.arguments().at(1) == "2")
+        if (a.arguments().at(1) == COMMAND_FILE_LIST)
         {
             qDebug() << "List of all entry files:";
             QStringList list = updater->getFileList();
@@ -50,15 +55,15 @@ int main(int argc, char *argv[])
                 qDebug() << iter;
             }
         }
-        if (a.arguments().at(1) == "0")
+        if (a.arguments().at(1) == COMMAND_UPDATE)
         {
             qDebug() << "Current remote repository:" << configJson["repository"];
             qDebug() << "Connecting...";
 
-//            downlaoder->getFileList();
+//            downloader->getFileList();
 
             updater->checkUpdate();
-//            downlaoder->auth();
+//            downloader->auth();
         }
     }
 

@@ -30,10 +30,16 @@ public:
 
     bool setRepository(const QString &repository);
     bool checkUpdate();
-    void fullUpdate(QStringList &fileList);
+    void update();
+    void download(const QString &fileName);
 
 public slots:
-    QStringList compareIni();
+    void compareIni();
+    void downloadNext();
+
+signals:
+    void onIniCompared();
+    void onComplited();
 
 private:
     QString _currentDir;
@@ -41,6 +47,8 @@ private:
     IApiDriver* _driver;
     ApiDriverType _driverType;
 
+    int _currentUpdatingIndex;
+    QStringList _updatingList;
     QString _publicKey;
 };
 

@@ -11,7 +11,7 @@ public:
     explicit GoogleDriveDriver(QObject *parent = nullptr);
 
 
-    void downloadUpdate() override;
+//    void downloadUpdate() override;
 };
 
 #endif // GOOGLEDRIVEDRIVER_H

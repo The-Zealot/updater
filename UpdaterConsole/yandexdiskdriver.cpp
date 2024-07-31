@@ -99,4 +99,5 @@ void YandexDiskDriver::process()
         emit onFileRead();
         break;
     }
+
 }

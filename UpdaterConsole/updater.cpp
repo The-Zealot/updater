@@ -14,10 +14,14 @@ Updater::Updater(ApiDriverType driver, QObject* parent) : QObject(parent)
         throw std::runtime_error("Invalid driver");
     }
 
+    connect(this, &Updater::onIniCompared, this, &Updater::downloadNext);
+    connect(_driver, &IApiDriver::onDownloaded, this, &Updater::downloadNext);
     connect(_driver, &IApiDriver::onFileRead, this, &Updater::compareIni);
     connect(_driver, &IApiDriver::onDownloaded, [this](){
         qDebug() << "Update is avilable";
     });
+
+    _currentUpdatingIndex = -1;
 
     _currentDir = QDir::currentPath();
 
@@ -92,9 +96,9 @@ void Updater::getAllFiles(QString currentDir)
     }
 }
 
-QStringList Updater::compareIni()
+void Updater::compareIni()
 {
-    QStringList updateFile;
+    _updatingList.clear();
     QFile file("./includes.ini");
     if (file.open(QIODevice::ReadOnly))
     {
@@ -110,7 +114,7 @@ QStringList Updater::compareIni()
         {
             if (!localIniList.contains(iter))
             {
-                updateFile.append(iter.split("=").at(0));
+                _updatingList.append(iter.replace("./", "").split("=").at(0));
             }
         }
     }
@@ -119,8 +123,30 @@ QStringList Updater::compareIni()
         qDebug() << "Failed when making update file list";
     }
 
-    qDebug() << updateFile;
-    return updateFile;
+    qDebug() << _updatingList;
+    emit onIniCompared();
+}
+
+void Updater::downloadNext()
+{
+    if (_currentUpdatingIndex < 0)
+    {
+        onComplited();
+        return;
+    }
+
+    if (_currentUpdatingIndex >= _updatingList.size())
+    {
+        qDebug() << "Download is complite";
+        _currentUpdatingIndex = -1;
+        emit onComplited();
+        return;
+    }
+
+    qDebug() << "Current downloading file: " + _updatingList.at(_currentUpdatingIndex);
+    _driver->tryDownloadFile(_publicKey, _updatingList.at(_currentUpdatingIndex));
+
+    _currentUpdatingIndex++;
 }
 
 bool Updater::setRepository(const QString &repository)
@@ -131,7 +157,6 @@ bool Updater::setRepository(const QString &repository)
 bool Updater::checkUpdate()
 {   
 //    _driver->tryDownloadFile("https://disk.yandex.ru/d/H9UuULUw5x06oA", "includes.ini");
-
     if (!_publicKey.isEmpty())
     {
         _driver->checkUpdate(_publicKey);
@@ -144,7 +169,13 @@ bool Updater::checkUpdate()
     }
 }
 
-void Updater::fullUpdate(QStringList &fileList)
+void Updater::update()
 {
-    qDebug() << "Fatal error";                                                                                              // TODO
+    _currentUpdatingIndex = 0;
+    _driver->checkUpdate(_publicKey);
+}
+
+void Updater::download(const QString &fileName)
+{
+    _driver->tryDownloadFile(_publicKey, fileName);
 }

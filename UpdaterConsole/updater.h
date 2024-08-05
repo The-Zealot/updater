@@ -26,7 +26,7 @@ public:
 
     QByteArray getHexHash(QString fileName);
 
-    void getAllFiles(QString currentDir);
+    void createFileList(QString currentDir);
 
     bool setRepository(const QString &repository);
     bool checkUpdate();

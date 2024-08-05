@@ -36,7 +36,7 @@ QStringList Updater::getFileList()
 {
     _fileList.clear();
 
-    getAllFiles(_currentDir);
+    createFileList(_currentDir);
 
     return _fileList;
 }
@@ -78,7 +78,7 @@ QByteArray Updater::getHexHash(QString fileName)
     return QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
 }
 
-void Updater::getAllFiles(QString currentDir)
+void Updater::createFileList(QString currentDir)
 {
     QDir dir(currentDir);
     for (auto & iter : dir.entryInfoList())
@@ -87,7 +87,7 @@ void Updater::getAllFiles(QString currentDir)
         {
             if (iter.fileName() != "." and iter.fileName() != "..")
             {
-                getAllFiles(iter.filePath());
+                createFileList(iter.filePath());
             }
         }
         else

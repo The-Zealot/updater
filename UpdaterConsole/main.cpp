@@ -11,6 +11,7 @@
 #define ERROR_CODE_NO_ERROR             0
 #define ERROR_CODE_NO_CONFIG            1
 #define ERROR_CODE_INVALID_ARGUMENTS    2
+#define ERROR_CODE_IVALID_INI           3
 
 #define COMMAND_FILE_LIST   "/files"
 #define COMMAND_MAKE_INI    "/makeini"
@@ -47,10 +48,16 @@ int main(int argc, char *argv[])
         if (a.arguments().at(1) == COMMAND_MAKE_INI)
         {
             updater->getFileList();
-            updater->saveToFile();
-
-            qDebug() << "includes.ini was updated";
-            qDebug() << updater->getFileList().size() << "strings was changed";
+            if (updater->saveToFile("includes.ini"))
+            {
+                qDebug() << "includes.ini was updated";
+                qDebug() << updater->getFileList().size() << "strings was changed";
+            }
+            else
+            {
+                qDebug() << "Failed making ini";
+                return ERROR_CODE_IVALID_INI;
+            }
 
             return ERROR_CODE_NO_ERROR;
         }

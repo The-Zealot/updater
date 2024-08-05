@@ -22,7 +22,7 @@ public:
 
     QStringList getFileList();
 
-    bool saveToFile();
+    bool saveToFile(const QString &fileName);
 
     QByteArray getHexHash(QString fileName);
 

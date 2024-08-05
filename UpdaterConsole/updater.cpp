@@ -41,9 +41,9 @@ QStringList Updater::getFileList()
     return _fileList;
 }
 
-bool Updater::saveToFile()
+bool Updater::saveToFile(const QString &fileName)
 {
-    QFile file("includes.ini");
+    QFile file(fileName);
     if (file.open(QIODevice::WriteOnly))
     {
         for (auto & iter : _fileList)

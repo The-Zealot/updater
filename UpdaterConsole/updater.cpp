@@ -34,6 +34,8 @@ Updater::~Updater()
 
 QStringList Updater::getFileList()
 {
+    _fileList.clear();
+
     getAllFiles(_currentDir);
 
     return _fileList;
